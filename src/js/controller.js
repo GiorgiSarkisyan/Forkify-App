@@ -20,9 +20,11 @@ const controlRecipes = async function () {
     console.log(recipeView);
     recipeView.render(model.state.recipe);
   } catch (err) {
-    alert(err);
+    recipeView.renderError();
   }
 };
-controlRecipes();
 
-window.addEventListener('hashchange', controlRecipes);
+const init = function () {
+  recipeView.addHandlerRender(controlRecipes);
+};
+init();
