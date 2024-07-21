@@ -3,9 +3,14 @@ import icons from '../../img/icons.svg';
 export default class View {
   _data;
 
-  render(data) {
+  render(data, render = true) {
+    if (!data || (Array.isArray(data) && data.length === 0))
+      return this.renderError();
     this._data = data;
     const markup = this._generateMarkup();
+
+    if (!render) return markup;
+
     this._clear();
     this._parentElement.insertAdjacentHTML('afterbegin', markup);
   }
@@ -13,19 +18,14 @@ export default class View {
   update(data) {
     if (!data || (Array.isArray(data) && data.length === 0))
       return this.renderError();
-
     this._data = data;
     const newMarkup = this._generateMarkup();
 
     const newDOM = document.createRange().createContextualFragment(newMarkup);
     const newElements = Array.from(newDOM.querySelectorAll('*'));
     const curElements = Array.from(this._parentElement.querySelectorAll('*'));
-    console.log(curElements);
-    console.log(newElements);
     newElements.forEach((newEl, i) => {
       const curEl = curElements[i];
-      console.log(curEl, curEl.isEqualNode(curEl));
-
       // Update changed text
       if (
         !newEl.isEqualNode(curEl) &&
@@ -36,7 +36,6 @@ export default class View {
 
       // Update Changed Attributes
       if (!newEl.isEqualNode(curEl)) {
-        console.log(Array.from(newEl.attributes));
         Array.from(newEl.attributes).forEach(attr =>
           curEl.setAttribute(attr.name, attr.value)
         );
